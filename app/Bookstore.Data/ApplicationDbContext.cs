@@ -49,6 +49,10 @@ namespace Bookstore.Data
 
             modelBuilder.Entity<Order>().HasOne(x => x.Customer).WithMany().OnDelete(DeleteBehavior.Restrict);
 
+            // Configure decimal precision for price fields
+            modelBuilder.Entity<Book>().Property(x => x.Price).HasPrecision(18, 2);
+            modelBuilder.Entity<Offer>().Property(x => x.BookPrice).HasPrecision(18, 2);
+
             PopulateDatabase(modelBuilder);
 
             base.OnModelCreating(modelBuilder);
