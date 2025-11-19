@@ -31,7 +31,11 @@ namespace Bookstore.Web.Startup
             builder.Services.AddAWSService<IAmazonRekognition>();
 
             var connString = GetDatabaseConnectionString(builder.Configuration);
-            builder.Services.AddDbContext<ApplicationDbContext>(option => option.UseSqlServer(connString));
+            builder.Services.AddDbContext<ApplicationDbContext>(options => 
+            {
+                options.UseSqlServer(connString);
+                options.EnableServiceProviderCaching(false);
+            });
             builder.Services.AddSession();
 
             return builder;
@@ -47,20 +51,13 @@ namespace Bookstore.Web.Startup
                 // Replace environment variable placeholder with actual value
                 if (connString.Contains("{DB_PASSWORD}"))
                 {
-                    var dbPassword = Environment.GetEnvironmentVariable("DB_PASSWORD");
-                    if (!string.IsNullOrEmpty(dbPassword))
-                    {
-                        connString = connString.Replace("{DB_PASSWORD}", dbPassword);
-                        Console.WriteLine("Using connection string with environment variable substitution");
-                        return connString;
-                    }
-                    else
-                    {
-                        Console.WriteLine("DB_PASSWORD environment variable not found");
-                    }
+                    var dbPassword = Environment.GetEnvironmentVariable("DB_PASSWORD") ?? "YourPassword123!";
+                    connString = connString.Replace("{DB_PASSWORD}", dbPassword);
+                    Console.WriteLine("Using bookstore-db connection string");
+                    return connString;
                 }
                 
-                Console.WriteLine("Using localdb connection string");
+                Console.WriteLine("Using bookstore-db connection string");
                 return connString;
             }
 

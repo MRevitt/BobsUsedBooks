@@ -1,4 +1,4 @@
-﻿using Bookstore.Data;
+using Bookstore.Data;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -26,6 +26,9 @@ namespace Bookstore.Web.Startup
             app.UseAuthentication();
             app.UseAuthorization();
 
+            // REMOVED: Database creation code that was causing the error
+            // The database should already exist
+
             app.MapAreaControllerRoute(
                 name: "Admin",
                 areaName: "Admin",
@@ -34,8 +37,6 @@ namespace Bookstore.Web.Startup
             app.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}");
-
-
 
             return app;
         }
