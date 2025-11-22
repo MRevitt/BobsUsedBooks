@@ -6,11 +6,16 @@ using Bookstore.Domain.Offers;
 using Bookstore.Domain.Orders;
 using Bookstore.Domain.ReferenceData;
 using Microsoft.EntityFrameworkCore;
+using System;
 
 namespace Bookstore.Data
 {
     public partial class ApplicationDbContext : DbContext
     {
+        static ApplicationDbContext()
+        {
+            AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+        }
         public ApplicationDbContext() { }
 
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
@@ -52,6 +57,10 @@ namespace Bookstore.Data
             // Configure decimal precision for price fields
             modelBuilder.Entity<Book>().Property(x => x.Price).HasPrecision(18, 2);
             modelBuilder.Entity<Offer>().Property(x => x.BookPrice).HasPrecision(18, 2);
+
+            // Boolean to integer conversions for PostgreSQL compatibility
+            modelBuilder.Entity<Address>().Property(e => e.IsActive).HasConversion<int>();
+            modelBuilder.Entity<ShoppingCartItem>().Property(e => e.WantToBuy).HasConversion<int>();
 
             PopulateDatabase(modelBuilder);
 
